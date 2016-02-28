@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Universal Contact Center Backend",
   "dependencies": {
-    "babel-polyfill": "^6.3.14"
+    "babel-polyfill": "^6.3.14",
+    "jsonwebtoken": "^5.7.0",
+    "twilio": "^2.9.0"
   },
   "devDependencies": {
     "babel-loader": "^6.2.3",
