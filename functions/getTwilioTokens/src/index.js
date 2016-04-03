@@ -20,8 +20,16 @@ let validateUser = function(authToken) {
 let findOrCreateTaskRouterWorker = function(userEmail) {
   console.log(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
   var client = new twilio.TaskRouterClient(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
-  return client.workspace.workers.get({ "FriendlyName": userEmail }).then(function(data) {
-    return(data.workers[0].sid);
+  var workerParams = { "FriendlyName": userEmail };
+  return client.workspace.workers.get(workerParams).then(function(data) {
+    var worker = data.workers[0];
+    if(worker) {
+      return(worker.sid);
+    } else {
+      return client.workspace.workers.create(workerParams).then(function(worker) {
+        return(worker.sid);
+      });
+    }
   }, function(err){
     console.error(err);
   });
