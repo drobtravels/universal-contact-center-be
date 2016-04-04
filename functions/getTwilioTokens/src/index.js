@@ -4,7 +4,7 @@ let twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 let twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 let taskRouterWorkspaceSid = process.env.TASK_ROUTER_WORKSPACE_SID;
 
-let validateUser = function(authToken) {
+function validateUser(authToken) {
   try {
     var secretBuf = new Buffer(process.env.AUTH_SECRET, 'base64');
     var decoded = jwt.verify(authToken, secretBuf)
@@ -17,7 +17,7 @@ let validateUser = function(authToken) {
   }
 }
 
-let findOrCreateTaskRouterWorker = function(userEmail) {
+function findOrCreateTaskRouterWorker(userEmail) {
   console.log(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
   var client = new twilio.TaskRouterClient(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
   var workerParams = { "FriendlyName": userEmail };
@@ -26,6 +26,7 @@ let findOrCreateTaskRouterWorker = function(userEmail) {
     if(worker) {
       return(worker.sid);
     } else {
+      workerParams.attributes = JSON.stringify({"contact_uri": emailToClientName(userEmail) });
       return client.workspace.workers.create(workerParams).then(function(worker) {
         return(worker.sid);
       });
@@ -35,17 +36,21 @@ let findOrCreateTaskRouterWorker = function(userEmail) {
   });
 }
 
-let getTaskRouterToken = function(workerSid) {
+function getTaskRouterToken(workerSid) {
   var capability = new twilio.TaskRouterWorkerCapability(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid, workerSid);
   capability.allowActivityUpdates();
   capability.allowReservationUpdates();
   return capability.generate();
 }
 
-let getTwilioClientToken = function() {
+function getTwilioClientToken(email) {
   var capability = new twilio.Capability(twilioAccountSid, twilioAuthToken)
-  capability.allowClientOutgoing(process.env.TWIML_APP_SID);
+  capability.allowClientIncoming(emailToClientName(email))
   return(capability.generate());
+}
+
+function emailToClientName(email) {
+  return(email.replace(/[^a-z0-9_]/gi, "_"));
 }
 
 export default function(event, context) {
@@ -58,7 +63,7 @@ export default function(event, context) {
         status: 'success',
         tokens: {
           taskRouter: taskRouterToken,
-          twilioClient: getTwilioClientToken()
+          twilioClient: getTwilioClientToken(userDetails.email)
         }
       });
     })
