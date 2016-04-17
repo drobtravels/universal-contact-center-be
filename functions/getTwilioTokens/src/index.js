@@ -26,7 +26,7 @@ function findOrCreateTaskRouterWorker(userEmail) {
     if(worker) {
       return(worker.sid);
     } else {
-      workerParams.attributes = JSON.stringify({"contact_uri": emailToClientName(userEmail) });
+      workerParams.attributes = JSON.stringify({"contact_uri": "client:" + emailToClientName(userEmail) });
       return client.workspace.workers.create(workerParams).then(function(worker) {
         return(worker.sid);
       });
