@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2016-05-03T16:08:33Z",
+    "version": "2016-05-06T02:19:50Z",
     "title": "Universal Contact Center"
   },
   "host": "eln5sp9xaj.execute-api.us-east-1.amazonaws.com",
@@ -50,6 +50,7 @@
           }
         },
         "x-amazon-apigateway-integration": {
+          "type": "aws",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -67,12 +68,12 @@
           "requestParameters": {
             "integration.request.header.User-Token": "method.request.header.User-Token"
           },
+          "passthroughBehavior": "when_no_match",
           "httpMethod": "POST",
           "requestTemplates": {
             "application/json": "{\n \"userToken\": \"$input.params().header.get('User-Token')\"\n}"
           },
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations",
-          "type": "aws"
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations"
         }
       },
       "options": {
@@ -102,6 +103,7 @@
           }
         },
         "x-amazon-apigateway-integration": {
+          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -112,10 +114,10 @@
               }
             }
           },
+          "passthroughBehavior": "when_no_match",
           "requestTemplates": {
             "application/json": "{\"statusCode\": 200}"
-          },
-          "type": "mock"
+          }
         }
       }
     },
@@ -137,6 +139,7 @@
           }
         },
         "x-amazon-apigateway-integration": {
+          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -145,11 +148,46 @@
               }
             }
           },
+          "passthroughBehavior": "when_no_match",
           "requestTemplates": {
             "application/x-www-form-urlencoded; charset=UTF-8": "{\"statusCode\": 200}",
             "application/x-www-form-urlencoded": "{\"statusCode\": 200}"
+          }
+        }
+      }
+    },
+    "/twilio/messages": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws",
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseTemplates": {
+                "application/xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n</Response>"
+              }
+            }
           },
-          "type": "mock"
+          "passthroughBehavior": "never",
+          "httpMethod": "POST",
+          "requestTemplates": {
+            "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$')\n}"
+          },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations"
         }
       }
     },
@@ -171,6 +209,7 @@
           }
         },
         "x-amazon-apigateway-integration": {
+          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -179,11 +218,11 @@
               }
             }
           },
+          "passthroughBehavior": "when_no_match",
           "requestTemplates": {
             "application/json": "{\"statusCode\": 200}",
             "application/x-www-form-urlencoded": "{\n    \"statusCode\": 200\n}"
-          },
-          "type": "mock"
+          }
         }
       }
     }

@@ -1,0 +1,10 @@
+{
+  "description": "Adds Text Message to Task Router",
+  "environment": {
+    "TWILIO_ACCOUNT_SID": "<TWILIO ACCOUNT SID>",
+    "TWILIO_AUTH_TOKEN": "<TWILIO AUTH TOKEN",
+    "AUTH_SECRET": "<AUTH0 SECRET>",
+    "TWIML_APP_SID": "<TWIML APP SID FOR OUTGOING CALLS>",
+    "TASK_ROUTER_WORKSPACE_SID": "<TASK ROUTER WORKSPACE>"
+  }
+}
