@@ -8,6 +8,8 @@ let taskRouterWorkspaceSid = process.env.TASK_ROUTER_WORKSPACE_SID;
 export default function(event, context) {
   var params = qs.parse(event.encodedParams)
   params.type = 'sms_message'
+  params.fromPhone = params.From
+  params.message = params.Body
   var client = new twilio.TaskRouterClient(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
   client.workspace.tasks.create({ attributes: JSON.stringify(params) }).then( (task) => {
     context.succeed({});
