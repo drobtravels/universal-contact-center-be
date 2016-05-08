@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2016-05-06T02:19:50Z",
+    "version": "2016-05-08T14:14:30Z",
     "title": "Universal Contact Center"
   },
   "host": "eln5sp9xaj.execute-api.us-east-1.amazonaws.com",
@@ -50,7 +50,6 @@
           }
         },
         "x-amazon-apigateway-integration": {
-          "type": "aws",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -70,10 +69,11 @@
           },
           "passthroughBehavior": "when_no_match",
           "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations",
           "requestTemplates": {
             "application/json": "{\n \"userToken\": \"$input.params().header.get('User-Token')\"\n}"
           },
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations"
+          "type": "aws"
         }
       },
       "options": {
@@ -103,7 +103,6 @@
           }
         },
         "x-amazon-apigateway-integration": {
-          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -117,7 +116,43 @@
           "passthroughBehavior": "when_no_match",
           "requestTemplates": {
             "application/json": "{\"statusCode\": 200}"
+          },
+          "type": "mock"
+        }
+      }
+    },
+    "/postmark/emails": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
           }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseTemplates": {
+                "application/json": "{}"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_templates",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromEmail/invocations",
+          "requestTemplates": {
+            "application/json": "{\n  \"FromEmail\": $input.json('$.From'),\n  \"FromName\": $input.json('$.FromName'),\n  \"ToEmail\": $input.json('$.To'),\n  \"Subject\": $input.json('$.Subject'),\n  \"Date\": $input.json('$.Date'),\n  \"MessageID\": $input.json('$.MessageID'),\n  \"Message\": $input.json('TextBody')\n}"
+          },
+          "type": "aws"
         }
       }
     },
@@ -139,7 +174,6 @@
           }
         },
         "x-amazon-apigateway-integration": {
-          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -152,7 +186,8 @@
           "requestTemplates": {
             "application/x-www-form-urlencoded; charset=UTF-8": "{\"statusCode\": 200}",
             "application/x-www-form-urlencoded": "{\"statusCode\": 200}"
-          }
+          },
+          "type": "mock"
         }
       }
     },
@@ -173,7 +208,6 @@
           }
         },
         "x-amazon-apigateway-integration": {
-          "type": "aws",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -184,10 +218,11 @@
           },
           "passthroughBehavior": "never",
           "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations",
           "requestTemplates": {
             "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$')\n}"
           },
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations"
+          "type": "aws"
         }
       }
     },
@@ -209,7 +244,6 @@
           }
         },
         "x-amazon-apigateway-integration": {
-          "type": "mock",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -222,7 +256,8 @@
           "requestTemplates": {
             "application/json": "{\"statusCode\": 200}",
             "application/x-www-form-urlencoded": "{\n    \"statusCode\": 200\n}"
-          }
+          },
+          "type": "mock"
         }
       }
     }
