@@ -1,12 +1,9 @@
 import twilio from 'twilio';
 import jwt from 'jsonwebtoken';
-let twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
-let twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-let taskRouterWorkspaceSid = process.env.TASK_ROUTER_WORKSPACE_SID;
 
-function validateUser(authToken) {
+function validateUser(authToken, auth0Secret) {
   try {
-    var secretBuf = new Buffer(process.env.AUTH_SECRET, 'base64');
+    var secretBuf = new Buffer(auth0Secret, 'base64');
     var decoded = jwt.verify(authToken, secretBuf)
     console.log('succesfully authenticated')
     console.log(decoded);
@@ -17,34 +14,36 @@ function validateUser(authToken) {
   }
 }
 
-function findOrCreateTaskRouterWorker(userEmail) {
-  console.log(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
-  var client = new twilio.TaskRouterClient(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid);
+function findOrCreateTaskRouterWorker(userEmail, credentials) {
+  var client = new twilio.TaskRouterClient(credentials.accountSid, credentials.authToken, credentials.workspaceSid);
   var workerParams = { "FriendlyName": userEmail };
   return client.workspace.workers.get(workerParams).then(function(data) {
     var worker = data.workers[0];
+    var params = { credentials: credentials }
     if(worker) {
-      return(worker.sid);
+      params.worker = worker;
     } else {
       workerParams.attributes = JSON.stringify({"contact_uri": "client:" + emailToClientName(userEmail) });
       return client.workspace.workers.create(workerParams).then(function(worker) {
-        return(worker.sid);
+        params.worker = worker;
       });
     }
+    return(params);
   }, function(err){
     console.error(err);
   });
 }
 
-function getTaskRouterToken(workerSid) {
-  var capability = new twilio.TaskRouterWorkerCapability(twilioAccountSid, twilioAuthToken, taskRouterWorkspaceSid, workerSid);
+function getTaskRouterToken(params) {
+  console.log('task router params are', params);
+  var capability = new twilio.TaskRouterWorkerCapability(params.credentials.accountSid, params.credentials.authToken, params.credentials.workspaceSid, params.worker.sid);
   capability.allowActivityUpdates();
   capability.allowReservationUpdates();
-  return capability.generate();
+  return { token: capability.generate(), credentials: params.credentials };
 }
 
-function getTwilioClientToken(email) {
-  var capability = new twilio.Capability(twilioAccountSid, twilioAuthToken)
+function getTwilioClientToken(email, credentials) {
+  var capability = new twilio.Capability(credentials.accountSid, credentials.authToken)
   capability.allowClientIncoming(emailToClientName(email))
   return(capability.generate());
 }
@@ -54,16 +53,16 @@ function emailToClientName(email) {
 }
 
 export default function(event, context) {
-  var userDetails = validateUser(event.userToken);
+  var userDetails = validateUser(event.userToken, event.credentials.auth0Secret);
   if( userDetails ) {
-    findOrCreateTaskRouterWorker(userDetails.email)
+    findOrCreateTaskRouterWorker(userDetails.email, event.credentials)
     .then(getTaskRouterToken)
-    .then(function(taskRouterToken) {
+    .then(function(params) {
       context.succeed({
         status: 'success',
         tokens: {
-          taskRouter: taskRouterToken,
-          twilioClient: getTwilioClientToken(userDetails.email)
+          taskRouter: params.token,
+          twilioClient: getTwilioClientToken(userDetails.email, event.credentials)
         }
       });
     })
