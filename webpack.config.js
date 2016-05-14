@@ -1,4 +1,5 @@
 // NOTE: paths are relative to each functions folder
+var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: './src/index.js',
@@ -28,5 +29,8 @@ module.exports = {
       helpers: './../../../helpers'
     },
     extensions: ['', '.js']
-  }
+  },
+
+  // ignore all modules in node_modules folder
+  externals: [nodeExternals()]
 };
