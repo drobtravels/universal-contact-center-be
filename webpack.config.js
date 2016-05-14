@@ -8,6 +8,7 @@ module.exports = {
     filename: 'index.js',
     libraryTarget: 'commonjs2'
   },
+
   module: {
     loaders: [
       {
@@ -20,5 +21,12 @@ module.exports = {
         loader: 'json-loader'
       }
     ]
+  },
+
+  resolve: {
+    alias: {
+      helpers: './../../../helpers'
+    },
+    extensions: ['', '.js']
   }
 };

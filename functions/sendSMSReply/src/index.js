@@ -1,17 +1,5 @@
 import twilio from 'twilio';
-import jwt from 'jsonwebtoken';
-
-function validateUser(authToken, auth0Secret) {
-  try {
-    var secretBuf = new Buffer(auth0Secret, 'base64');
-    var decoded = jwt.verify(authToken, secretBuf)
-    console.log('succesfully authenticated')
-    return(true);
-  } catch(err) {
-    console.log('failed jwt verify: ', err, 'auth: ', authToken);``
-    return(false);
-  }
-}
+import validateUser from 'helpers/validateUser.js';
 
 export default function(event, context) {
   if( validateUser(event.userToken, event.credentials.auth0Secret) ) {

@@ -1,18 +1,5 @@
 import twilio from 'twilio';
-import jwt from 'jsonwebtoken';
-
-function validateUser(authToken, auth0Secret) {
-  try {
-    var secretBuf = new Buffer(auth0Secret, 'base64');
-    var decoded = jwt.verify(authToken, secretBuf)
-    console.log('succesfully authenticated')
-    console.log(decoded);
-    return(decoded);
-  } catch(err) {
-    console.log('failed jwt verify: ', err, 'auth: ', authToken);``
-    return(false);
-  }
-}
+import validateUser from 'helpers/validateUser.js';
 
 function findOrCreateTaskRouterWorker(userEmail, credentials) {
   var client = new twilio.TaskRouterClient(credentials.accountSid, credentials.authToken, credentials.workspaceSid);
