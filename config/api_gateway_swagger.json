@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2016-05-08T14:14:30Z",
+    "version": "2016-05-14T14:00:25Z",
     "title": "Universal Contact Center"
   },
   "host": "eln5sp9xaj.execute-api.us-east-1.amazonaws.com",
@@ -10,6 +10,110 @@
     "https"
   ],
   "paths": {
+    "/client/messages": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "User-Token",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            }
+          },
+          "401": {
+            "description": "401 response"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "responseTemplates": {
+                "application/json": "{ status: \"success\" }"
+              }
+            },
+            "unauthorized user": {
+              "statusCode": "401",
+              "responseTemplates": {
+                "application/json": "{\n    \"error\": \"user is not authorized\"\n}"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_templates",
+          "httpMethod": "POST",
+          "requestTemplates": {
+            "application/json": "{\n \"userToken\": \"$input.params().header.get('User-Token')\",\n \"phone\": $input.json('$.phone'),\n \"message\": $input.json('$.message'),\n \"from\": \"+$stageVariables.defaultNumber\",\n \"credentials\": {\n    \"accountSid\": \"$stageVariables.accountSid\",\n    \"authToken\": \"$stageVariables.authToken\",\n    \"auth0Secret\": \"$stageVariables.auth0Secret\"\n  }\n}"
+          },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_sendSMSReply/invocations",
+          "type": "aws"
+        }
+      },
+      "options": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string"
+              },
+              "Access-Control-Allow-Headers": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,User-Token'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "type": "mock"
+        }
+      }
+    },
     "/client/tokens": {
       "get": {
         "consumes": [
@@ -69,10 +173,10 @@
           },
           "passthroughBehavior": "when_no_match",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations",
           "requestTemplates": {
-            "application/json": "{\n \"userToken\": \"$input.params().header.get('User-Token')\"\n}"
+            "application/json": "{\n \"userToken\": \"$input.params().header.get('User-Token')\",\n \"credentials\": {\n    \"accountSid\": \"$stageVariables.accountSid\",\n    \"authToken\": \"$stageVariables.authToken\",\n    \"workspaceSid\": \"$stageVariables.workspaceSid\",\n    \"auth0Secret\": \"$stageVariables.auth0Secret\"\n  }\n}"
           },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_getTwilioTokens/invocations",
           "type": "aws"
         }
       },
@@ -148,10 +252,10 @@
           },
           "passthroughBehavior": "when_no_templates",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromEmail/invocations",
           "requestTemplates": {
-            "application/json": "{\n  \"FromEmail\": $input.json('$.From'),\n  \"FromName\": $input.json('$.FromName'),\n  \"ToEmail\": $input.json('$.To'),\n  \"Subject\": $input.json('$.Subject'),\n  \"Date\": $input.json('$.Date'),\n  \"MessageID\": $input.json('$.MessageID'),\n  \"Message\": $input.json('TextBody')\n}"
+            "application/json": "{\n  \"FromEmail\": $input.json('$.From'),\n  \"FromName\": $input.json('$.FromName'),\n  \"ToEmail\": $input.json('$.To'),\n  \"Subject\": $input.json('$.Subject'),\n  \"Date\": $input.json('$.Date'),\n  \"MessageID\": $input.json('$.MessageID'),\n  \"Message\": $input.json('TextBody'),\n  \"credentials\": {\n    \"accountSid\": \"$stageVariables.accountSid\",\n    \"authToken\": \"$stageVariables.authToken\",\n    \"workspaceSid\": \"$stageVariables.workspaceSid\"\n  }\n}"
           },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromEmail/invocations",
           "type": "aws"
         }
       }
@@ -218,10 +322,10 @@
           },
           "passthroughBehavior": "never",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations",
           "requestTemplates": {
-            "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$')\n}"
+            "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$'),\n  \"credentials\": {\n    \"accountSid\": \"$stageVariables.accountSid\",\n    \"authToken\": \"$stageVariables.authToken\",\n    \"workspaceSid\": \"$stageVariables.workspaceSid\"\n  }\n}"
           },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations",
           "type": "aws"
         }
       }
