@@ -1,5 +1,5 @@
 import twilio from 'twilio';
-import validateUser from 'helpers/validateUser.js';
+import validateUser from 'helpers/validateUser';
 
 export default function(event, context) {
   if( validateUser(event.userToken, event.credentials.auth0Secret) ) {

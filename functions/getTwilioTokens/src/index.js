@@ -1,5 +1,5 @@
 import twilio from 'twilio';
-import validateUser from 'helpers/validateUser.js';
+import validateUser from 'helpers/validateUser';
 
 function findOrCreateTaskRouterWorker(userEmail, credentials) {
   var client = new twilio.TaskRouterClient(credentials.accountSid, credentials.authToken, credentials.workspaceSid);
