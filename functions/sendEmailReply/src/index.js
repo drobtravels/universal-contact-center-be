@@ -1,25 +1,29 @@
-import postmark from 'postmark';
+import fetch from 'node-fetch';
 import validateUser from 'helpers/validateUser';
 
 export default function(event, context) {
-  console.log('event', event)
+
   if( validateUser(event.userToken, event.credentials.auth0Secret) ) {
-    console.log('creating client')
-    var client = new postmark.Client(event.credentials.postmarkToken)
-    console.log('client created')
-    client.sendEmail({
+    var params = {
       "From": event.from,
       "To": event.email,
       "Subject": event.subject,
       "TextBody": event.message
-    }, (error, result) => {
-      if(error) {
-        console.error('error sending e-mail', error)
-        context.fail({ error: error })
-      } else {
-        context.succeed(result)
-      }
+    }
+
+    fetch('https://api.postmarkapp.com/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Postmark-Server-Token': event.credentials.postmarkToken
+      },
+      body: JSON.stringify(params)
     })
+    	.then( (response) => response.json() )
+    	.then( (json) => {
+        context.succeed(json)
+      }, (error) => context.fail({ apiError: error }) )
   } else {
     context.fail('unauthorized user');
   }
