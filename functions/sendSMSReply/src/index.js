@@ -4,14 +4,14 @@ import validateUser from 'helpers/validateUser';
 /**
  * sends an outgoing SMS message
  * @param {Object} event - data provided by API Gateway
- * @param {string} event.from - e-mail to send from
- * @param {string} event.email - e-mail to send to
- * @param {string} event.subject - subject of e-mail
- * @param {string} event.message - text body of e-mail
+ * @param {string} event.message - text body of SMS
+ * @param {string} event.to - phone # to send SMS to
+ * @param {string} event.from -  phone # to send SMS from
  * @param {string} event.userToken - auth0 user JSON web token
  * @param {Object} event.credentials - Relevent Credentials as set in API Gateway stage varaibles
  * @param {string} event.credentials.auth0Secret - Auth0 secret to authenticate users
- * @param {string} event.credentials.postmarkToken - Postmark Server token to authenticate
+ * @param {string} event.credentials.accountSid - Twilio Account Sid
+ * @param {string} event.credentials.authToken - Twilio Auth Token
  */
 export default function(event, context) {
   if( validateUser(event.userToken, event.credentials.auth0Secret) ) {
