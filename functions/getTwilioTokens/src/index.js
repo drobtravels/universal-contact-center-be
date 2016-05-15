@@ -32,7 +32,8 @@ function getTaskRouterToken(params) {
 function getTwilioClientToken(email, credentials) {
   var capability = new twilio.Capability(credentials.accountSid, credentials.authToken)
   capability.allowClientIncoming(emailToClientName(email))
-  return(capability.generate());
+  capability.allowClientOutgoing(credentials.outgoingApplicationSid)
+  return(capability.generate())
 }
 
 function emailToClientName(email) {
