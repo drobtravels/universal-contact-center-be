@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2016-05-15T00:04:09Z",
+    "version": "2016-05-15T00:49:57Z",
     "title": "Universal Contact Center"
   },
   "host": "eln5sp9xaj.execute-api.us-east-1.amazonaws.com",
@@ -433,6 +433,41 @@
             "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$'),\n  \"credentials\": {\n    \"accountSid\": \"$stageVariables.accountSid\",\n    \"authToken\": \"$stageVariables.authToken\",\n    \"workspaceSid\": \"$stageVariables.workspaceSid\"\n  }\n}"
           },
           "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_createTaskFromSMS/invocations",
+          "type": "aws"
+        }
+      }
+    },
+    "/twilio/outgoing_calls": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseTemplates": {
+                "application/xml": "<Response>\n    <Dial callerId=\"+$stageVariables.defaultNumber\">\n        $input.path('$.phone')\n    </Dial>\n</Response>"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_templates",
+          "httpMethod": "POST",
+          "requestTemplates": {
+            "application/x-www-form-urlencoded": "{\n  \"encodedParams\" : $input.json('$')\n}"
+          },
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:385123002370:function:universal-contact-center_parseFormParams/invocations",
           "type": "aws"
         }
       }
