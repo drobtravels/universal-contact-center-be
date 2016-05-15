@@ -40,6 +40,17 @@ function emailToClientName(email) {
   return(email.replace(/[^a-z0-9_]/gi, "_"));
 }
 
+/**
+ * generate JSON Web Tokens for Twilio Client and Task Router
+ * @param {Object} event - data provided by API Gateway
+ * @param {string} event.userToken - auth0 user JSON web token
+ * @param {Object} event.credentials - Relevent Credentials as set in API Gateway stage varaibles
+ * @param {string} event.credentials.auth0Secret - Auth0 secret to authenticate users
+ * @param {string} event.credentials.accountSid - Twilio Account Sid
+ * @param {string} event.credentials.authToken - Twilio Auth Token
+ * @param {string} event.credentials.workspaceSid - SID of Twilio Task Router Workspace
+ * @param {string} event.credentials.outgoingApplicationSid - SID of Twilio Application for outgoing calls
+ */
 export default function(event, context) {
   var userDetails = validateUser(event.userToken, event.credentials.auth0Secret);
   if( userDetails ) {

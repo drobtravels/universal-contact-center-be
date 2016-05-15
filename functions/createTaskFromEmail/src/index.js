@@ -1,5 +1,18 @@
 import twilio from 'twilio';
-
+/**
+ * recieve e-mail from Postmark and create task in Task Router
+ * @param {Object} event - data provided by API Gateway
+ * @param {Object} event.credentials - Relevent Credentials as set in API Gateway stage varaibles
+ * @param {string} event.credentials.accountSid - Twilio Account Sid
+ * @param {string} event.credentials.authToken - Twilio Auth Token
+ * @param {string} event.credentials.workspaceSid - SID of Twilio Task Router Workspace
+ * @param {string} event.FromEmail - e-mail of sender
+ * @param {string} event.FromName - name of sender
+ * @param {string} event.Message - text body of e-mail
+ * @param {string} event.Subject - e-mail subject
+ * @param {string} event.MessageID - Postmark unique id
+ * @param {string} event.Date - Date e-mail was sent
+ */
 export default function(event, context) {
   var params = {
     type: 'email',
