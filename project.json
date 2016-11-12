@@ -3,7 +3,7 @@
   "description": "Universal Contact Center Backend",
   "memory": 128,
   "role": "arn:aws:iam::385123002370:role/lambda_basic_execution",
-  "runtime": "nodejs",
+  "runtime": "nodejs4.3",
   "handler": "lib.default",
   "hooks": {
     "build": "../../node_modules/.bin/webpack --config ../../webpack.config.js",
